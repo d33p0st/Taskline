@@ -1,0 +1,59 @@
+[workspace]
+members = ["taskline-init", "taskline-bump"]
+resolver = "2"
+
+# Main package - Taskline CLI dispatcher and installer
+[package]
+name = "taskline"
+version = "0.1.0"
+edition = "2021"
+authors = ["d33p0st <your-email@example.com>"]
+license = "MIT OR Apache-2.0"
+description = "Ultra-fast scripting framework - CLI dispatcher and automatic installer for all Taskline tools"
+readme = "README.md"
+homepage = "https://github.com/d33p0st/Taskline"
+repository = "https://github.com/d33p0st/Taskline"
+documentation = "https://docs.rs/taskline"
+keywords = ["taskline", "script", "framework", "performance", "async"]
+categories = ["development-tools", "parser-implementations", "template-engine"]
+exclude = ["target/", "*.orig", "Cargo.lock", "taskline-*"]
+rust-version = "1.70"
+
+# Workspace-wide ultra-aggressive optimizations
+[profile.release]
+# Link Time Optimization - eliminates ALL unused code across crates
+lto = "fat"              # Most aggressive LTO - slower build, smallest/fastest binary
+# Code generation optimizations  
+codegen-units = 1        # Single codegen unit for maximum optimization
+opt-level = 3            # Maximum optimization level
+# Size optimizations
+strip = true             # Strip debug symbols from binary
+panic = "abort"          # Smaller panic implementation
+# Performance optimizations
+overflow-checks = false  # Disable overflow checks in release
+debug = false           # No debug info for maximum speed/size
+
+[profile.dev]
+# Fast development builds
+opt-level = 0
+debug = true
+lto = false
+
+# Workspace dependencies for version management
+[workspace.dependencies]
+chrono = "0.4.42"
+clap = { version = "4.5.47", features = ["derive"] }
+env_logger = "0.11.8" 
+log = "0.4.28"
+tokio = "1.47.1"
+
+# Dependencies for the main taskline library
+[dependencies]
+# Core dependencies for shared functionality
+clap = { workspace = true, features = ["derive"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "process"] }
+log = { workspace = true }
+env_logger = { workspace = true }
+
+[features]
+default = []

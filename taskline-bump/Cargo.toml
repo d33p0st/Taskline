@@ -1,0 +1,55 @@
+[package]
+name = "taskline-bump"
+version = "0.1.0"
+edition = "2021"
+authors = ["d33p0st <your-email@example.com>"]
+license = "MIT OR Apache-2.0"
+description = "Ultra-fast version bumping tool for Taskline scripts with zero-regex parsing"
+readme = "README.md"
+homepage = "https://github.com/d33p0st/Taskline"
+repository = "https://github.com/d33p0st/Taskline"
+documentation = "https://docs.rs/taskline-bump"
+keywords = ["taskline", "version", "bump", "performance", "script"]
+categories = ["command-line-utilities", "development-tools"]
+exclude = ["target/", "*.orig", "Cargo.lock"]
+rust-version = "1.70"
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+# Ultra-aggressive optimizations for standalone installation
+[profile.release]
+# Link Time Optimization - eliminates ALL unused code across crates
+lto = "fat"              # Most aggressive LTO - slower build, smallest/fastest binary
+# Code generation optimizations  
+codegen-units = 1        # Single codegen unit for maximum optimization
+opt-level = 3            # Maximum optimization level
+# Size optimizations
+strip = true             # Strip debug symbols from binary
+panic = "abort"          # Smaller panic implementation
+# Performance optimizations
+overflow-checks = false  # Disable overflow checks in release
+debug = false           # No debug info for maximum speed/size
+
+[profile.dev]
+# Fast development builds
+opt-level = 0
+debug = true
+lto = false
+
+# Binary configuration
+[[bin]]
+name = "taskline-bump" 
+path = "src/main.rs"
+
+[dependencies]
+# ONLY dependencies used by bump binary - ultra minimal!
+taskline = { path = ".." }  # Use shared library
+clap = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "fs"] }
+
+[dev-dependencies]
+# Development and testing dependencies
+tempfile = "3.8"
+tokio-test = "0.4"
